@@ -125,6 +125,7 @@ def check_working():
     return jsonify({"working": True}), 200
 
 if __name__ == '__main__':
-    port = int(os.getenv("PORT", 5000))  # Usar el puerto proporcionado por el entorno, o 5000 por defecto
-    app.run(port=port, debug=True)
+    port = int(os.getenv("PORT", 5000))  # Usa el puerto proporcionado por el entorno, o 5000 por defecto
+    app.run(host='0.0.0.0', port=port, debug=True)  # Cambia el host a '0.0.0.0'
+
 
