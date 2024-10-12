@@ -119,6 +119,11 @@ def check_payment_status():
         return jsonify({"error": str(e)}), 400
 
 
+# Endpoint para verificar de la api
+@app.route('/working', methods=['GET'])
+def check_working():
+    return jsonify({"working": True}), 200
+
 if __name__ == '__main__':
     port = int(os.getenv("PORT", 5000))  # Usar el puerto proporcionado por el entorno, o 5000 por defecto
     app.run(port=port, debug=True)
