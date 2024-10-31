@@ -129,3 +129,4 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)  # Cambia el host a '0.0.0.0'
 
 
+# esto es para develop
