@@ -18,6 +18,7 @@ def verify_sanctum_token(token):
         result = cursor.fetchone()
         cursor.close()  # Cierra el cursor después de usarlo
         
+
         if result:
             logging.info(f"Token verificado para user_id: {result[0]}")
             return result[0] ,None

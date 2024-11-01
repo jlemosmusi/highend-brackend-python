@@ -88,9 +88,10 @@ stripe.api_key = Config.STRIPE_SECRET_KEY
 payment_intent_bp = Blueprint("payment_intent", __name__)
 
 @payment_intent_bp.route("/create-payment-intent", methods=["POST"])
-@sanctum_auth_required
-def create_payment_intent(user_id):
+# @sanctum_auth_required
+def create_payment_intent(user_id= None):
     try:
+        # print('asd')
         data = request.json
         amount = data.get("amount")
         products = data.get("products")
@@ -117,6 +118,7 @@ def create_payment_intent(user_id):
         # Datos de usuario ficticios o reemplazar por datos reales
         name, surname, phone = "Test", "User", "123456789"
         address_1, address_2, suburb, state, zipCode = "123 Test St", "Apt 4B", "Test City", "NSW", "2000"
+        user_id='01j7jt0v75gxhdp7ff3ana3jrw'
 
         # Crear el PaymentIntent en Stripe
         intent = stripe.PaymentIntent.create(
@@ -150,3 +152,4 @@ def create_payment_intent(user_id):
     except Exception as e:
         logging.error(f"Unexpected error: {e}")
         return jsonify(error=str(e)), 403
+
