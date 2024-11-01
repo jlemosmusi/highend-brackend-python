@@ -4,7 +4,9 @@ import stripe
 from config.config import Config
 # from db.conection import engine
 # from db.conection import connection
-
+import os
+if os.getenv("ENVIRONMENT") == "production":
+    from db.conection import connection
 
 # Crear un Blueprint para el webhook de Stripe
 webhook_bp = Blueprint("webhook", __name__)
