@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 import stripe
 from config.config import Config
 # from db.conection import engine
-from db.conection import connection
+# from db.conection import connection
 
 
 # Crear un Blueprint para el webhook de Stripe
@@ -99,24 +99,24 @@ def stripe_webhook():
         logging.error("Firma de webhook inválida")
         return jsonify({"error": "Invalid signature"}), 400
 
-def create_order(payment_intent):
-    """Inserta un nuevo pedido en la base de datos usando una consulta SQL."""
-    with connection.connect() as conn:
-        query = open("db/create_order.sql").read()
-        conn.execute(query, {
-            'id': payment_intent['id'],
-            'user_id': payment_intent['metadata']['user_id'],
-            'product_id': payment_intent['metadata']['product_ids'],
-            'order_no': 1,
-            'status': 'PREPARING',
-            'address': payment_intent['shipping']['address']['line1'],
-            'billing_address': payment_intent['shipping']['address']['line1'],
-            'source': "WEB",
-            'commission_fee': '{"collection":[{"from":"1","to":"250","fee":"10%"},{"from":"251","to":"500","fee":"20%"}]}'
-        })
+# def create_order(payment_intent):
+#     """Inserta un nuevo pedido en la base de datos usando una consulta SQL."""
+#     with connection.connect() as conn:
+#         query = open("db/create_order.sql").read()
+#         conn.execute(query, {
+#             'id': payment_intent['id'],
+#             'user_id': payment_intent['metadata']['user_id'],
+#             'product_id': payment_intent['metadata']['product_ids'],
+#             'order_no': 1,
+#             'status': 'PREPARING',
+#             'address': payment_intent['shipping']['address']['line1'],
+#             'billing_address': payment_intent['shipping']['address']['line1'],
+#             'source': "WEB",
+#             'commission_fee': '{"collection":[{"from":"1","to":"250","fee":"10%"},{"from":"251","to":"500","fee":"20%"}]}'
+#         })
 
-def update_order_status(order_id, new_status):
-    """Actualiza el estado de un pedido usando SQL."""
-    with connection.connect() as conn:
-        query = open("db/update_order_status.sql").read()
-        conn.execute(query, {'id': order_id, 'status': new_status})
+# def update_order_status(order_id, new_status):
+#     """Actualiza el estado de un pedido usando SQL."""
+#     with connection.connect() as conn:
+#         query = open("db/update_order_status.sql").read()
+#         conn.execute(query, {'id': order_id, 'status': new_status})
