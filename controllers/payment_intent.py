@@ -7,7 +7,7 @@ if os.getenv("ENVIRONMENT") == "production":
     from utils.auth import sanctum_auth_required
     from db.conection import connection  # Adjusted to your `connection` path
 
-
+from controllers.webhook import create_transaction,create_user_payment_history
 
 # Configuración de Stripe
 stripe.api_key = Config.STRIPE_SECRET_KEY
@@ -16,7 +16,7 @@ stripe.api_key = Config.STRIPE_SECRET_KEY
 payment_intent_bp = Blueprint("payment_intent", __name__)
 
 # Conditionally apply the decorator if in development
-if os.getenv("ENVIRONMENT") == "development":
+if os.getenv("ENVIRONMENT") == "production":
     @payment_intent_bp.route("/create-payment-intent", methods=["POST"])
     @sanctum_auth_required
     def create_payment_intent(user_id=None):
@@ -38,6 +38,7 @@ def process_payment_intent(user_id=None):
             return jsonify({"error": "No amount provided"}), 400
         
         if os.getenv("ENVIRONMENT") == "production":
+            print('busco en base de datos user_id:: '+ user_id)
         # Consulta a la base de datos para obtener la dirección del usuario
             cursor = connection.cursor()
             cursor.execute("""
@@ -47,6 +48,7 @@ def process_payment_intent(user_id=None):
             """, (user_id,))
             result = cursor.fetchone()
             cursor.close()
+            name, surname, phone, state, suburb, address_1, address_2, zipCode = result
 
             if not result:
                 logging.error("User address not found")
@@ -80,8 +82,11 @@ def process_payment_intent(user_id=None):
                 'product_ids': ','.join([product["id"] for product in products])
             }
         )
+        print(intent)
 
         logging.info(f"PaymentIntent creado: {intent['id']}")
+        create_transaction(intent,"PENDING")
+        create_user_payment_history(user_id,intent,"PENDING")
         return jsonify({"clientSecret": intent["client_secret"]})
 
     except stripe.error.StripeError as e:
