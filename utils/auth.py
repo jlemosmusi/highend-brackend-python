@@ -3,7 +3,7 @@ from functools import wraps
 from flask import request, jsonify
 import logging
 import os
-if os.getenv("ENVIRONMENT") == "production":
+if os.getenv("ENVIRONMENT") != "local":
     from db.conection import connection
 
 def verify_sanctum_token(token):

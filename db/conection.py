@@ -1,7 +1,7 @@
 import os
 import psycopg2
 
-if os.getenv("ENVIRONMENT") == "production":
+if os.getenv("ENVIRONMENT") != "local":
     connection = psycopg2.connect(
         host="127.0.0.1",
         port="5432",

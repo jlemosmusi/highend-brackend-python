@@ -3,7 +3,7 @@ import stripe
 import logging
 import os
 from config.config import Config
-if os.getenv("ENVIRONMENT") == "production":
+if os.getenv("ENVIRONMENT") != "local":
     from utils.auth import sanctum_auth_required
     from db.conection import connection  # Adjusted to your `connection` path
 
@@ -16,7 +16,7 @@ stripe.api_key = Config.STRIPE_SECRET_KEY
 payment_intent_bp = Blueprint("payment_intent", __name__)
 
 # Conditionally apply the decorator if in development
-if os.getenv("ENVIRONMENT") == "production":
+if os.getenv("ENVIRONMENT") != "local":
     @payment_intent_bp.route("/create-payment-intent", methods=["POST"])
     @sanctum_auth_required
     def create_payment_intent(user_id=None):
@@ -85,8 +85,11 @@ def process_payment_intent(user_id=None):
         print(intent)
 
         logging.info(f"PaymentIntent creado: {intent['id']}")
+
         create_transaction(intent,"PENDING")
+        
         create_user_payment_history(user_id,intent,"PENDING")
+
         return jsonify({"clientSecret": intent["client_secret"]})
 
     except stripe.error.StripeError as e:
