@@ -1,7 +1,6 @@
 import logging
 from flask import Blueprint, request, jsonify
 import stripe
-from config.config import Config
 from dotenv import load_dotenv
 from utils.generate_id import generate_ulid
 from datetime import datetime, timedelta
@@ -116,7 +115,7 @@ def stripe_webhook():
             # Actualizar historial del usuario
             #update_user_payment_history(payment_intent_id, "checkout.session.completed")
             
-            logging.info(f"Checkout completado: {session['id']}")
+            logging.info(f"Checkout completado: {payment_intent['id']}")
 
         elif event["type"] == "checkout.session.async_payment_succeeded":
             # Este evento ocurre cuando un pago asincrónico de checkout se completa exitosamente.
