@@ -1,54 +1,54 @@
-# name: Deploy to AWS ECR and Fargate
+name: Deploy to AWS ECR and Fargate
 
-# on:
-#   push:
-#     branches:
-#       - main
-#       - stage
+on:
+  push:
+    branches:
+      - main
+      - stage
 
-# jobs:
-#   build_and_deploy:
-#     runs-on: ubuntu-latest
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
 
-#     env:
-#       AWS_REGION: ${{ secrets.AWS_REGION }}
-#       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
-#     steps:
-#       - name: Check out the code
-#         uses: actions/checkout@v3
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v3
 
-#       - name: Log in to Amazon ECR
-#         id: login-ecr
-#         uses: aws-actions/amazon-ecr-login@v1
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-#       - name: Set repository variables
-#         run: |
-#           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-#             echo "ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY_PRODUCTION }}" >> $GITHUB_ENV
-#             echo "IMAGE_TAG=latest" >> $GITHUB_ENV
-#           else
-#             echo "ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY_STAGE }}" >> $GITHUB_ENV
-#             echo "IMAGE_TAG=staging" >> $GITHUB_ENV
-#           fi
-#         shell: bash
+      - name: Set repository variables
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY_PRODUCTION }}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=latest" >> $GITHUB_ENV
+          else
+            echo "ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY_STAGE }}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=staging" >> $GITHUB_ENV
+          fi
+        shell: bash
 
-#       - name: Build Docker image
-#         run: |
-#           docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG .
+      - name: Build Docker image
+        run: |
+          docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG .
 
-#       - name: Push Docker image to Amazon ECR
-#         run: |
-#           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: Push Docker image to Amazon ECR
+        run: |
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
 
-#       - name: Update ECS service
-#         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage'
-#         env:
-#           CLUSTER_NAME: "your-cluster-name"  # Update with your ECS Cluster name
-#           SERVICE_NAME: "your-service-name"  # Update with your ECS Service name
-#         run: |
-#           aws ecs update-service \
-#             --cluster $CLUSTER_NAME \
-#             --service $SERVICE_NAME \
-#             --force-new-deployment \
-#             --region $AWS_REGION
+      - name: Update ECS service
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage'
+        env:
+          CLUSTER_NAME: "your-cluster-name"  # Update with your ECS Cluster name
+          SERVICE_NAME: "your-service-name"  # Update with your ECS Service name
+        run: |
+          aws ecs update-service \
+            --cluster $CLUSTER_NAME \
+            --service $SERVICE_NAME \
+            --force-new-deployment \
+            --region $AWS_REGION
