@@ -7,7 +7,6 @@ from controllers.get_oder import getOrder
 from controllers.get_user_history_transaction import get_user_hist
 from config.logging_config import setup_logging
 from dotenv import load_dotenv
-import os
 
 # Cargar variables de entorno
 load_dotenv()
@@ -33,3 +32,6 @@ def check_working():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=Config.PORT, debug=Config.DEBUG)
+
+
+

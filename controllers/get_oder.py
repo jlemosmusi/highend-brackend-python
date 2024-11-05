@@ -1,14 +1,18 @@
 import logging
 from flask import jsonify, request, Blueprint
 from psycopg2.extras import RealDictCursor
-from db.conection import connection
+import os
+from dotenv import load_dotenv
+load_dotenv()
+if os.getenv("ENVIRONMENT") != "local":
+    from db.conection import get_connection
 
 getOrder = Blueprint("getOrder", __name__)
 
 # fetch_order_details_by_payment_intent('pi_3QGCMiC070pu0s7s0SxFQjH7')
 def fetch_order_details_by_payment_intent(payment_intent_id):
     response = {"data": {"createOrderOnCharge": []}}
-
+    connection=get_connection()
     with connection.cursor(cursor_factory=RealDictCursor) as cursor:
         cursor.execute("""
             SELECT id FROM transactions

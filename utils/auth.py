@@ -3,14 +3,18 @@ from functools import wraps
 from flask import request, jsonify
 import logging
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 if os.getenv("ENVIRONMENT") != "local":
-    from db.conection import connection
+    from db.conection import get_connection
 
 def verify_sanctum_token(token):
     try:
         token_id, token_value = token.split('|')
         hashed_token = hashlib.sha256(token_value.encode()).hexdigest()
-
+        
+        connection=get_connection()
         cursor = connection.cursor()
         cursor.execute("""
             SELECT tokenable_id FROM personal_access_tokens 

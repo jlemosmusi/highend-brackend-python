@@ -1,15 +1,11 @@
 import logging
 from flask import Blueprint, request, jsonify
+from psycopg2.extras import RealDictCursor
 import os
 from dotenv import load_dotenv
-from psycopg2.extras import RealDictCursor
-
-
-# Cargar las variables de entorno directamente en webhook.py como depuración
 load_dotenv()
 if os.getenv("ENVIRONMENT") != "local":
-    print('es con base de datos')
-    from db.conection import connection
+    from db.conection import get_connection
 
 
 get_user_hist = Blueprint("get_user_hist", __name__)
@@ -29,7 +25,7 @@ def get_user_payment_history():
     # Validación de que al menos uno de los parámetros esté presente
     if not user_id and not payment_intent_id:
         return jsonify({"error": "Debe proporcionar user_id o payment_intent_id para realizar la consulta"}), 400
-
+    connection=get_connection()
     try:
         # Crear la conexión a la base de datos y ejecutar la consulta
         with connection.cursor(cursor_factory=RealDictCursor) as cursor:

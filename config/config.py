@@ -8,7 +8,7 @@ class Config:
     WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET")
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
     PORT = int(os.getenv("PORT", 5000))
-    ENVIRONMENT = os.getenv("ENVIRONMENT", "production")
+    ENVIRONMENT = os.getenv("ENVIRONMENT", "local")
     DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
     # Only use the database URL in development

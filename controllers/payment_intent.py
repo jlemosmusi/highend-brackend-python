@@ -1,11 +1,15 @@
 from flask import Blueprint, jsonify, request
 import stripe
 import logging
-import os
 from config.config import Config
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 if os.getenv("ENVIRONMENT") != "local":
     from utils.auth import sanctum_auth_required
-    from db.conection import connection  # Adjusted to your `connection` path
+    from db.conection import get_connection # Solo importa si no es "local"
+
 
 from controllers.webhook import create_transaction,create_user_payment_history
 
@@ -39,7 +43,8 @@ def process_payment_intent(user_id=None):
         
         if os.getenv("ENVIRONMENT") == "production":
             print('busco en base de datos user_id:: '+ user_id)
-        # Consulta a la base de datos para obtener la dirección del usuario
+            # Consulta a la base de datos para obtener la dirección del usuario
+            connection=get_connection()
             cursor = connection.cursor()
             cursor.execute("""
                 SELECT name, surname, phone, state, suburb, address_1, address_2, zip 
@@ -82,7 +87,6 @@ def process_payment_intent(user_id=None):
                 'product_ids': ','.join([product["id"] for product in products])
             }
         )
-        print(intent)
 
         logging.info(f"PaymentIntent creado: {intent['id']}")
 
