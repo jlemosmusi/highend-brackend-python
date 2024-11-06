@@ -34,7 +34,7 @@ else:
 def process_payment_intent(user_id=None):
     try:
         data = request.json
-        amount = data.get("amount")
+        amount = int(data.get("amount"))
         products = data.get("products")
 
         if amount is None:
