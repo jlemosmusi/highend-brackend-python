@@ -26,7 +26,7 @@ app.register_blueprint(get_user_hist)
 
 
 # Endpoint para verificar el estado de la API
-@app.route('/working', methods=['GET'])
+@app.route('/api/microservicio/working', methods=['GET'])
 def check_working():
     return jsonify({"nueva version": True}), 200
 
