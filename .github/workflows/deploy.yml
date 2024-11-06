@@ -3,7 +3,7 @@ name: Build and Push Docker Image to AWS ECR
 on:
   push:
     branches:
-      - stage  # Ejecutar este workflow solo en la rama 'stage'
+      - stage
 
 jobs:
   build_and_push_to_ecr:
@@ -12,8 +12,7 @@ jobs:
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_STAGE }}
-      IMAGE_TAG: "latest"  # Puedes cambiar la etiqueta de la imagen según tus necesidades
+      IMAGE_TAG: "latest"
 
     steps:
       - name: Check out the code
@@ -36,7 +35,7 @@ jobs:
 
       - name: Tag Docker image
         run: |
-          docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/backend_python_stage:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$backend_python_stage:$IMAGE_TAG
+          docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/backend_python_stage:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/backend_python_stage:$IMAGE_TAG
 
       - name: Push Docker image to Amazon ECR
         run: |
