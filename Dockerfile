@@ -17,10 +17,7 @@ COPY . .
 # Configura las variables de entorno para Flask
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
-ENV PORT=5000
+ENV PORT=80
+EXPOSE 80
+CMD ["flask", "run", "--host=0.0.0.0", "--port=80"]
 
-# Exponer el puerto utilizado por Flask
-EXPOSE 5000
-
-# Comando para iniciar la aplicación
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
