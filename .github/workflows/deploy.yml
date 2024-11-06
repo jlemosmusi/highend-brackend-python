@@ -1,4 +1,4 @@
-name: Build and Push Docker Image to AWS ECR
+name: Build, Push, and Deploy Docker Image to AWS ECR and ECS
 
 on:
   push:
@@ -6,14 +6,14 @@ on:
       - stage  # Ejecutar este workflow solo en la rama 'stage'
 
 jobs:
-  build_and_push_to_ecr:
+  build_and_deploy_to_ecr_and_ecs:
     runs-on: ubuntu-latest
 
     env:
       AWS_REGION: "ap-southeast-2"
       AWS_ACCOUNT_ID: "969288724771"
       ECR_REPOSITORY: "backend_python_stage"
-      IMAGE_TAG: "latest"  # Puedes cambiar la etiqueta de la imagen según tus necesidades
+      IMAGE_TAG: "latest"
 
     steps:
       - name: Check out the code
@@ -41,3 +41,14 @@ jobs:
       - name: Push Docker image to Amazon ECR
         run: |
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Update ECS service
+        env:
+          CLUSTER_NAME: "highend-production"   # Cambia a tu nombre de cluster
+          SERVICE_NAME: "backend-python-stage-service"  # Cambia a tu nombre de servicio
+        run: |
+          aws ecs update-service \
+            --cluster $CLUSTER_NAME \
+            --service $SERVICE_NAME \
+            --force-new-deployment \
+            --region $AWS_REGION
