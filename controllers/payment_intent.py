@@ -64,7 +64,6 @@ def process_payment_intent(user_id=None):
             name, surname, phone = "Test", "User", "123456789"
             address_1, address_2, suburb, state, zipCode = "123 Test St", "Apt 4B", "Test City", "NSW", "2000"
             user_id='01j7jt0v75gxhdp7ff3ana3jrw'
-
         # Crear el PaymentIntent en Stripe
         intent = stripe.PaymentIntent.create(
             amount=int(amount * 100),  # Monto en centavos
@@ -88,11 +87,12 @@ def process_payment_intent(user_id=None):
             }
         )
 
+
         logging.info(f"PaymentIntent creado: {intent['id']}")
 
-        create_transaction(intent,"PENDING")
+        # create_transaction(intent,"PENDING")
         
-        create_user_payment_history(user_id,intent,"PENDING")
+        # create_user_payment_history(user_id,intent,"PENDING")
 
         return jsonify({"clientSecret": intent["client_secret"]})
 
