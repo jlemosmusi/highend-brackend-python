@@ -4,14 +4,14 @@ import logging
 from config.config import Config
 import os
 from dotenv import load_dotenv
-
+from controllers.webhook import create_transaction,create_user_payment_history
+from controllers.get_cart_products_by_user import obtener_productos_usuario
 load_dotenv()
 if os.getenv("ENVIRONMENT") != "local":
     from utils.auth import sanctum_auth_required
     from db.conection import get_connection # Solo importa si no es "local"
 
 
-from controllers.webhook import create_transaction,create_user_payment_history
 
 # Configuración de Stripe
 stripe.api_key = Config.STRIPE_SECRET_KEY
@@ -21,6 +21,7 @@ payment_intent_bp = Blueprint("payment_intent", __name__)
 
 # Conditionally apply the decorator if in development
 if os.getenv("ENVIRONMENT") != "local":
+    print('ENVIRONMENT')
     @payment_intent_bp.route("/create-payment-intent", methods=["POST"])
     @sanctum_auth_required
     def create_payment_intent(user_id=None):
@@ -36,6 +37,12 @@ def process_payment_intent(user_id=None):
         data = request.json
         amount = int(data.get("amount"))
         products = data.get("products")
+        productsid=','.join([product["id"] for product in products])
+        print(f'products by web: {productsid}')
+        if os.getenv("ENVIRONMENT") == "production":
+            productsByFuction= obtener_productos_usuario(user_id)
+            print(f'products by fuction: {productsByFuction}')
+
 
         if amount is None:
             logging.error("No amount provided")
@@ -102,4 +109,5 @@ def process_payment_intent(user_id=None):
     except Exception as e:
         logging.error(f"Unexpected error: {e}")
         return jsonify(error=str(e)), 403
+
 

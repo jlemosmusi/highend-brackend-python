@@ -22,7 +22,7 @@ webhook_bp = Blueprint("webhook", __name__)
 @webhook_bp.route("/webhook", methods=["POST"])
 def stripe_webhook():
     logging.info("Webhook recibido")
-    payload = request.get_data(as_text=True)
+    # payload = request.get_data(as_text=True)
     event = request.json
 
     try:
@@ -45,7 +45,7 @@ def stripe_webhook():
             # Crear transacción en el estado "PENDING"
             # transaction_id = create_transaction(payment_intent, "PENDING")
             # if transaction_id:
-                #create_user_payment_history(user_id, payment_intent, "payment_intent.created")    
+                # create_user_payment_history(user_id, payment_intent, "payment_intent.created")    
                 logging.info(f"CONFIRMADO PaymentIntent creado: {payment_intent['id']}")
 
         elif event["type"] == "payment_intent.requires_action":
@@ -363,6 +363,9 @@ def create_user_payment_history(user_id, payment_intent, status):
     except Exception as e:
         logging.error(f"Error creating user payment history: {e}")
         connection.rollback()
+    finally:
+        if connection:
+            connection.close()
 
 import time
 
@@ -385,6 +388,9 @@ def update_user_payment_history(payment_intent_id, event_type):
     except Exception as e:
         logging.error(f"Error updating user payment history: {e}")
         connection.rollback()
+    finally:
+        if connection:
+            connection.close()
 
 def update_order_status(order_id, new_status):
     try:
