@@ -31,6 +31,9 @@ def stripe_webhook():
         payment_intent = event["data"]["object"]
         payment_intent_id = payment_intent["id"]
         user_id = payment_intent.get("metadata", {}).get("user_id", "unknown_user")
+        customer=None
+        if user_id == "unknown_user":
+            customer= event["data"]["object"]["customer"]
 
         # Eventos de pago
         # logging.info(f"Eventoe de Stripe: {event['type']}")
@@ -45,7 +48,7 @@ def stripe_webhook():
             # Crear transacción en el estado "PENDING"
             # transaction_id = create_transaction(payment_intent, "PENDING")
             # if transaction_id:
-                # create_user_payment_history(user_id, payment_intent, "payment_intent.created")    
+                create_user_payment_history(user_id, payment_intent, "payment_intent.created",customer)    
                 logging.info(f"CONFIRMADO PaymentIntent creado: {payment_intent['id']}")
 
         elif event["type"] == "payment_intent.requires_action":
@@ -53,7 +56,7 @@ def stripe_webhook():
             # Ejemplo: el usuario necesita autenticarse o confirmar su pago antes de continuar.
             
             # Actualizar historial de pago y cambiar el estado de la transacción a "REQUIRES_ACTION"
-            #update_user_payment_history(payment_intent_id, "payment_intent.requires_action")
+            update_user_payment_history(payment_intent_id, "payment_intent.requires_action")
             #update_transaction_status(payment_intent_id, "REQUIRES_ACTION")
             
             logging.info(f"CONFIRMADO PaymentIntent requiere acción: {payment_intent['id']}")
@@ -63,7 +66,7 @@ def stripe_webhook():
             # Ejemplo: el sistema está validando o procesando los detalles de pago del usuario.
             
             # Actualizar historial y estado de la transacción a "PROCESSING"
-            #update_user_payment_history(payment_intent_id, "payment_intent.processing")
+            update_user_payment_history(payment_intent_id, "payment_intent.processing")
             #update_transaction_status(payment_intent['id'], "PROCESSING")
             
             logging.info(f"CONFIRMADO PaymentIntent en proceso: {payment_intent['id']}")
@@ -82,7 +85,7 @@ def stripe_webhook():
             # Ejemplo: el pago del usuario no se puede procesar debido a fondos insuficientes o error de tarjeta.
             
             # Actualizar historial y estado a "FAILED"
-            #update_user_payment_history(payment_intent_id, "payment_intent.payment_failed")
+            update_user_payment_history(payment_intent_id, "payment_intent.payment_failed")
             #update_transaction_status(payment_intent['id'], "FAILED")
             
             logging.info(f"CONFIRMADO PaymentIntent fallido: {payment_intent['id']}")
@@ -92,7 +95,7 @@ def stripe_webhook():
             # Ejemplo: el usuario decide no completar la compra y el pago se cancela.
             
             # Actualizar historial y estado a "CANCELED"
-            #update_user_payment_history(payment_intent_id, "payment_intent.canceled")
+            update_user_payment_history(payment_intent_id, "payment_intent.canceled")
             #update_transaction_status(payment_intent['id'], "CANCELED")
             
             logging.info(f"CONFIRMADO PaymentIntent cancelado: {payment_intent['id']}")
@@ -102,7 +105,7 @@ def stripe_webhook():
             # Ejemplo: el sistema ajusta la cantidad que se puede capturar en el pago, esperando la confirmación final.
             
             # Actualizar historial y estado a "REQUIRES_CONFIRMATION"
-            #update_user_payment_history(payment_intent_id, "payment_intent.amount_capturable_updated")
+            update_user_payment_history(payment_intent_id, "payment_intent.amount_capturable_updated")
             #update_transaction_status(payment_intent['id'], "REQUIRES_CONFIRMATION")
             
             logging.info(f"CONFIRMADO PaymentIntent fondos capturables: {payment_intent['id']}")
@@ -113,7 +116,7 @@ def stripe_webhook():
             # Ejemplo: el usuario ha completado su compra y el pago fue procesado correctamente.
             
             # Actualizar historial del usuario
-            #update_user_payment_history(payment_intent_id, "checkout.session.completed")
+            update_user_payment_history(payment_intent_id, "checkout.session.completed")
             
             logging.info(f"CONFIRMADO Checkout completado: {payment_intent['id']}")
 
@@ -122,7 +125,7 @@ def stripe_webhook():
             # Ejemplo: el sistema procesa un pago que toma más tiempo en completarse, como una transferencia.
             
             # Actualizar historial y estado de transacción a "SUCCESSFUL"
-            #update_user_payment_history(payment_intent_id, "checkout.session.async_payment_succeeded")
+            update_user_payment_history(payment_intent_id, "checkout.session.async_payment_succeeded")
             #update_transaction_status(payment_intent['id'], "SUCCESSFUL")
             
             logging.info(f"CONFIRMADO Pago asincrónico exitoso: {payment_intent['id']}")
@@ -132,7 +135,7 @@ def stripe_webhook():
             # Ejemplo: el sistema intenta procesar un pago pero falla después de varios intentos.
             
             # Actualizar historial y estado de transacción a "FAILED"
-            #update_user_payment_history(payment_intent_id, "checkout.session.async_payment_failed")
+            update_user_payment_history(payment_intent_id, "checkout.session.async_payment_failed")
             #update_transaction_status(payment_intent['id'], "FAILED")
             
             logging.info(f"CONFIRMADO Pago asincrónico fallido: {payment_intent['id']}")
@@ -142,7 +145,7 @@ def stripe_webhook():
             # Ejemplo: el usuario tarda demasiado en completar la compra, y la sesión expira automáticamente.
             
             # Actualizar historial y estado de orden a "CANCELED"
-            #update_user_payment_history(payment_intent_id, "checkout.session.expired")
+            update_user_payment_history(payment_intent_id, "checkout.session.expired")
             #update_transaction_status(payment_intent['id'], "CANCELED")
             
             logging.info(f"CONFIRMADO Checkout expirado: {payment_intent['id']}")
@@ -153,7 +156,7 @@ def stripe_webhook():
             # Ejemplo: el usuario se registra en el sistema y crea un cliente en la cuenta de Stripe.
             
             # Actualizar historial del usuario
-            #update_user_payment_history(payment_intent_id, "customer.created")
+            update_user_payment_history(payment_intent_id, "customer.created")
             # customer = event["data"]["object"]
             
             logging.info(f"CONFIRMADO Cliente creado: {payment_intent['id']}")
@@ -163,7 +166,7 @@ def stripe_webhook():
             # Ejemplo: el usuario decide eliminar su cuenta, y el cliente se borra de Stripe.
             
             # Actualizar historial del usuario
-            #update_user_payment_history(payment_intent_id, "customer.deleted")
+            update_user_payment_history(payment_intent_id, "customer.deleted")
             # customer = event["data"]["object"]
             
             logging.info(f"CONFIRMADO Cliente eliminado: {payment_intent['id']}")
@@ -173,7 +176,7 @@ def stripe_webhook():
             # Ejemplo: el usuario se suscribe a un plan de servicio o suscripción en la plataforma.
             
             # Actualizar historial de suscripción
-            #update_user_payment_history(payment_intent_id, "customer.subscription.created")
+            update_user_payment_history(payment_intent_id, "customer.subscription.created")
             # subscription = event["data"]["object"]
             
             logging.info(f"CONFIRMADO Suscripción creada: {payment_intent['id']}")
@@ -183,7 +186,7 @@ def stripe_webhook():
             # Ejemplo: el usuario cancela su suscripción a un servicio.
             
             # Actualizar historial de suscripción
-            #update_user_payment_history(payment_intent_id, "customer.subscription.deleted")
+            update_user_payment_history(payment_intent_id, "customer.subscription.deleted")
             # subscription = event["data"]["object"]
             
             logging.info(f"CONFIRMADO Suscripción cancelada: {payment_intent['id']}")
@@ -194,7 +197,7 @@ def stripe_webhook():
             # Ejemplo: el usuario paga su factura, y el pago se confirma.
             
             # Actualizar historial del pago
-            #update_user_payment_history(payment_intent_id, "invoice.payment_succeeded")
+            update_user_payment_history(payment_intent_id, "invoice.payment_succeeded")
             # invoice = event["data"]["object"]
             
             logging.info(f"CONFIRMADO Pago de factura exitoso: {payment_intent['id']}")
@@ -204,7 +207,7 @@ def stripe_webhook():
             # Ejemplo: el pago de la factura no se procesa, posiblemente debido a fondos insuficientes.
             
             # Actualizar historial del pago
-            #update_user_payment_history(payment_intent_id, "invoice.payment_failed")
+            update_user_payment_history(payment_intent_id, "invoice.payment_failed")
             # invoice = event["data"]["object"]
             
             logging.info(f"CONFIRMADO Pago de factura fallido: {payment_intent['id']}")
@@ -215,7 +218,7 @@ def stripe_webhook():
             # Ejemplo: el usuario solicita un reembolso, y el sistema devuelve el monto.
             
             # Actualizar historial y estado a "REFUND"
-            #update_user_payment_history(payment_intent_id, "charge.refunded")
+            update_user_payment_history(payment_intent_id, "charge.refunded")
             # charge = event["data"]["object"]
             #update_transaction_status(charge['id'], "REFUND")
             # update_order_status(charge, "REFUNDED")
@@ -227,7 +230,7 @@ def stripe_webhook():
             # Ejemplo: el reembolso cambia de estado en Stripe, y se refleja en el sistema.
             
             # Actualizar historial del reembolso
-            #update_user_payment_history(payment_intent_id, "refund.updated")
+            update_user_payment_history(payment_intent_id, "refund.updated")
             # refund = event["data"]["object"]
             logging.info(f"CONFIRMADO Reembolso actualizado: {payment_intent['id']}")
 
@@ -325,7 +328,7 @@ def update_transaction_status(payment_intent_id, new_status):
         connection.rollback()
         return None
 
-def create_user_payment_history(user_id, payment_intent, status):
+def create_user_payment_history(user_id, payment_intent, status,customer=None):
     try:
         user_id = payment_intent.get("metadata", {}).get("user_id", "unknown_user")
         products = payment_intent.get("metadata", {}).get("product_ids", "unknown_products")
@@ -333,7 +336,8 @@ def create_user_payment_history(user_id, payment_intent, status):
         initial_event = {
             "type": "payment_intent.created",
             "timestamp": payment_intent["created"],
-            "products":products
+            "products":products,
+            "customer":customer
         }
         connection=get_connection()
 
