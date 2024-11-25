@@ -2,8 +2,10 @@ import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from config.config import Config
+from dotenv import load_dotenv
 
 
+load_dotenv()
 
 def send_email(to_email, subject, dynamic_data, template_id):
     """
@@ -17,7 +19,8 @@ def send_email(to_email, subject, dynamic_data, template_id):
     try:
         # Configurar el correo
         message = Mail(
-            from_email=(Config.MAIL_FROM_ADDRESS, Config.MAIL_FROM_NAME),
+            from_email=(os.getenv("MAIL_FROM_ADDRESS"), os.getenv("MAIL_FROM_NAME")),
+            # from_email=(Config.MAIL_FROM_ADDRESS, Config.MAIL_FROM_NAME),
             to_emails=to_email,
         )
         message.dynamic_template_data = dynamic_data
@@ -25,7 +28,8 @@ def send_email(to_email, subject, dynamic_data, template_id):
         message.subject = subject
 
         # Enviar el correo
-        sg = SendGridAPIClient(Config.SENDGRID_API_KEY)
+        sg = SendGridAPIClient(os.getenv("SENDGRID_API_KEY"))
+        # sg = SendGridAPIClient(Config.SENDGRID_API_KEY)
         response = sg.send(message)
         
         print(f"Email enviado. Estado: {response.status_code}")
