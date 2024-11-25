@@ -15,6 +15,11 @@ jobs:
       ECR_REPOSITORY: "backend_python_stage"
       IMAGE_TAG: "latest"
 
+      # Agregar secretos como variables de entorno
+      SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+
+
+
     steps:
       - name: Check out the code
         uses: actions/checkout@v3
