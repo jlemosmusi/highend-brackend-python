@@ -32,6 +32,13 @@ if os.getenv("ENVIRONMENT") != "local":
         data = request.json
         buyer_user_id = data.get("buyer_user_id")
         payment_intent_id= data.get("payment_intent_id")
+
+        admin= data.get("admin")
+        password= data.get("password")
+        if admin != 'bestTeam':
+            return {"error":"cant access"}
+        if password != 'weAreTheBestTeam8877':
+            return {"error":"cant access"}
         try:
             products_id=data.get("products_id")
         except:
@@ -44,6 +51,13 @@ else:
         data = request.json
         buyer_user_id = data.get("buyer_user_id")
         payment_intent_id= data.get("payment_intent_id")
+        
+        admin= data.get("admin")
+        password= data.get("password")
+        if admin != 'bestTeam':
+            return {"error":"cant access"}
+        if password != 'weAreTheBestTeam8877':
+            return {"error":"cant access"}
         try:
             products_id=data.get("products_id")
         except:
