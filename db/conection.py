@@ -49,6 +49,36 @@ def get_connection():
 # connection = get_connection()
 
 
+
+# def get_connection():
+#     return psycopg2.connect(
+#             host="highend-test-instance.chu8gn9clulu.ap-southeast-2.rds.amazonaws.com",
+#             port="5432",
+#             database="postgres",
+#             user="postgres",
+#             password="1nPCo7ZJbkcSK86j3U93X10Y0Oj4Svsm"
+#         )
+# connection = get_connection()
+
+# conn = psycopg2.connect(
+#     host="highend-test-instance.chu8gn9clulu.ap-southeast-2.rds.amazonaws.com",
+#     port="5432",
+#     database="postgres",
+#     user="postgres",
+#     password="1nPCo7ZJbkcSK86j3U93X10Y0Oj4Svsm"
+# )
+
+# # Cursor para ejecutar consultas
+# cur = conn.cursor()
+
+# # Ejecutar una consulta de prueba
+# cur.execute("SELECT NOW();")
+# print(cur.fetchone())
+
+# # Cerrar la conexión
+# cur.close()
+# conn.close()
+
 # import time
 
 # payment_intent={

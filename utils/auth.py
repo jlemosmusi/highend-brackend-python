@@ -9,6 +9,9 @@ load_dotenv()
 if os.getenv("ENVIRONMENT") != "local":
     from db.conection import get_connection
 
+
+
+
 def verify_sanctum_token(token):
     try:
         token_id, token_value = token.split('|')

@@ -10,6 +10,9 @@ class Config:
     PORT = int(os.getenv("PORT", 5000))
     ENVIRONMENT = os.getenv("ENVIRONMENT", "local")
     DEBUG = os.getenv("DEBUG", "True").lower() == "true"
+    SENDGRID_API_KEY= os.getenv("SENDGRID_API_KEY")
+    MAIL_FROM_ADDRESS= os.getenv("MAIL_FROM_ADDRESS")
+    MAIL_FROM_NAME= os.getenv("MAIL_FROM_NAME")
 
     # Only use the database URL in development
     if ENVIRONMENT != "local":

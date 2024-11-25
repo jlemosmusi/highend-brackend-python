@@ -426,6 +426,13 @@ def stripe_id_to_int(payment_intent_id):
     order_no = int(hash_object.hexdigest(), 16) % 10**18
     return order_no
 
+
+
+
+
+
+# "17 Glenn Close, Victoria, Cranbourne West, 3977"
+
 def create_order(payment_intent):
     """
     Crea una o más órdenes basadas en un payment_intent y devuelve los order_id generados.
@@ -435,6 +442,16 @@ def create_order(payment_intent):
     product_ids = payment_intent['metadata']['product_ids'].split(",")
     shipping = payment_intent.get('shipping', {})
     formatted_delivery_address = format_address(shipping)
+
+    # user_id= "01hhe9ff2x2fh6xc8a8ft0arz9"
+    # product_ids= ["01jd13tbwz1r4ktrt9bce48frz"]
+    # product_id='01jd13tbwz1r4ktrt9bce48frz'
+    # total_amount= 7590.35*100
+    # # final_price=7590.35
+    # payment_intent={}
+    # payment_intent['id']= 'pi_3QNW1uCUpuUR1Oe91VfwAFvO'
+    # formatted_delivery_address= "78 Kirwan street, WA, floreat, 6014"
+
 
     connection=get_connection()
 
@@ -447,6 +464,7 @@ def create_order(payment_intent):
 
     preparing_finished_at = datetime.now() + timedelta(days=preparation_threshold_days)
     order_no = stripe_id_to_int(payment_intent['id'])
+    # order_no=842821759
     order_ids = []
 
     for index, product_id in enumerate(product_ids):
@@ -490,7 +508,7 @@ def create_order(payment_intent):
                 )
                 RETURNING id
             """, (
-                generate_ulid(), user_id, product_id, order_no + index, 'PREPARING', 'PENDING', None, None,
+                generate_ulid(), user_id, product_id, order_no, 'PREPARING', 'PENDING', None, None,
                 preparing_finished_at, formatted_delivery_address, formatted_delivery_address,
                 None, None, None, commission_fee_str, None, "WEB"
             ))
